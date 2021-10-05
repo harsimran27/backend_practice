@@ -36,7 +36,7 @@ app.use("/user", userRouter);
 
 userRouter
     .route("/")
-    .post(createUser);
+    .post(bodyChecker, createUser);
 
 function createUser(req, res) {
     let body = req.body;
@@ -46,6 +46,15 @@ function createUser(req, res) {
     res.json({
         message: content
     })
+}
+
+function bodyChecker(req, res, next) {
+    let isPresent = Object.keys(req.body);
+    if (isPresent.length) {
+        next();
+    } else {
+        res.send("send details in body");
+    }
 }
 
 app.listen("8000", function () {
