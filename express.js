@@ -1,10 +1,11 @@
-const { json } = require('express');
 const express = require('express');
 const fs = require('fs');
-const { nextTick } = require('process');
+const path = require('path');
 const app = express();
 
 app.use(express.json());
+app.use(express.static("public"));
+// console.log(__dirname);
 
 // app.get("/", (req, res) => {
 //     // let body = req.body;
@@ -29,14 +30,21 @@ app.use(express.json());
 // })
 
 let content = JSON.parse(fs.readFileSync("./data.json"));
-console.log(content);
+// console.log(content);
 
 let userRouter = express.Router();
+let authRouter = express.Router();
+
 app.use("/user", userRouter);
+app.use("/auth", authRouter);
 
 userRouter
     .route("/")
     .post(bodyChecker, createUser);
+
+authRouter
+    .route("/signup")
+    .post(bodyChecker, signupUser)
 
 function createUser(req, res) {
     let body = req.body;
@@ -57,6 +65,34 @@ function bodyChecker(req, res, next) {
     }
 }
 
+function signupUser(req, res) {
+    try {
+        let { name, email, password, confirmPassword } = req.body;
+        if (password == confirmPassword) {
+
+            let newUser = { name, email, password };
+
+            content.push(newUser);
+            fs.writeFileSync("data.json", JSON.stringify(content));
+            res.status(200).json({
+                createUser: newUser
+            })
+        } else {
+            res.status(422).send("data not matched");
+        }
+    } catch (err) {
+        res.status(500).json({
+            message: err.message,
+        })
+    }
+}
+
 app.listen("8000", function () {
     console.log('server started at port 8000');
+})
+
+app.use(function (req, res) {
+    let restOfPath = path.join("./public", "404.html");
+    res.status(404).sendFile
+        (path.join(__dirname, restOfPath));
 })

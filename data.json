@@ -1,1 +1,7 @@
-[{"name":"simran","age":21},{"Name":"ritik","age":22},{"Name":"jaspreet","age":21},{"Name":"jaspreet","age":29}]
+[
+  { "name": "simran", "age": 21 },
+  { "Name": "ritik", "age": 22 },
+  { "Name": "jaspreet", "age": 21 },
+  { "Name": "jaspreet", "age": 29 },
+  { "name": "simran", "email": "abcd@gmail.com", "password": "12345678" }
+]
