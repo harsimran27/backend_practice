@@ -2,9 +2,13 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const app = express();
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("./secret");
 
 app.use(express.json());
 app.use(express.static("public"));
+app.use(cookieParser());
 // console.log(__dirname);
 
 // app.get("/", (req, res) => {
@@ -42,6 +46,10 @@ userRouter
     .route("/")
     .post(bodyChecker, createUser);
 
+userRouter
+    .route("/")
+    .get(protectRoute, getUsers)
+
 authRouter
     .route("/signup")
     .post(bodyChecker, signupUser)
@@ -49,6 +57,12 @@ authRouter
 authRouter
     .route("/login")
     .post(bodyChecker, loginUser);
+
+function getUsers(req, res) {
+    res.status(200).json({
+        message: content
+    });
+}
 
 function createUser(req, res) {
     let body = req.body;
@@ -66,6 +80,24 @@ function bodyChecker(req, res, next) {
         next();
     } else {
         res.send("send details in body");
+    }
+}
+
+function protectRoute(req, res, next) {
+    try {
+
+        let decreptedToken = jwt.verify(req.cookies.JWT, JWT_SECRET);
+        if (decreptedToken) {
+            next();
+        } else {
+            res.send("kindly login to access this record");
+        }
+
+    } catch (err) {
+        res.status(404)
+            .json({
+                message: err.message,
+            })
     }
 }
 
@@ -103,12 +135,13 @@ function loginUser(req, res) {
                 .send("user not found");
         }
         if (password == obj.password) {
-            res
-                .status(200)
+            let token = jwt.sign({ email: obj.email }, JWT_SECRET);
+            res.cookie("JWT", token);
+
+            res.status(200)
                 .send("user logged in");
         } else {
-            res
-                .status(422)
+            res.status(422)
                 .send("access denied. Enter correct email and password");
         }
     } catch (err) {
