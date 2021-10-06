@@ -46,6 +46,10 @@ authRouter
     .route("/signup")
     .post(bodyChecker, signupUser)
 
+authRouter
+    .route("/login")
+    .post(bodyChecker, loginUser);
+
 function createUser(req, res) {
     let body = req.body;
     content.push(body);
@@ -84,6 +88,34 @@ function signupUser(req, res) {
         res.status(500).json({
             message: err.message,
         })
+    }
+}
+
+function loginUser(req, res) {
+    try {
+        let { email, password } = req.body;
+        let obj = content.find((obj) => {
+            return obj.email == email;
+        })
+        if (!obj) {
+            return res
+                .status(404)
+                .send("user not found");
+        }
+        if (password == obj.password) {
+            res
+                .status(200)
+                .send("user logged in");
+        } else {
+            res
+                .status(422)
+                .send("access denied. Enter correct email and password");
+        }
+    } catch (err) {
+        res.status(404)
+            .json({
+                message: err.message,
+            })
     }
 }
 
