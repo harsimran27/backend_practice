@@ -5,6 +5,7 @@ const app = express();
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("./secret");
+const userModel = require("./userModal");
 
 app.use(express.json());
 app.use(express.static("public"));
@@ -39,8 +40,8 @@ let content = JSON.parse(fs.readFileSync("./data.json"));
 let userRouter = express.Router();
 let authRouter = express.Router();
 
-app.use("/user", userRouter);
-app.use("/auth", authRouter);
+app.use("/api/user", userRouter);
+app.use("/api/auth", authRouter);
 
 userRouter
     .route("/")
@@ -101,21 +102,13 @@ function protectRoute(req, res, next) {
     }
 }
 
-function signupUser(req, res) {
+async function signupUser(req, res) {
     try {
-        let { name, email, password, confirmPassword } = req.body;
-        if (password == confirmPassword) {
-
-            let newUser = { name, email, password };
-
-            content.push(newUser);
-            fs.writeFileSync("data.json", JSON.stringify(content));
-            res.status(200).json({
-                createUser: newUser
-            })
-        } else {
-            res.status(422).send("data not matched");
-        }
+        let newUser = await userModel.create(req.body);
+        res.status(200).json({
+            "message": "user created successfully",
+            user: newUser,
+        })
     } catch (err) {
         res.status(500).json({
             message: err.message,
