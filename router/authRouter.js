@@ -2,6 +2,7 @@ let express = require("express");
 let authRouter = express.Router();
 let { bodyChecker, protectRoute } = require("./utilFunc");
 let jwt = require("jsonwebtoken");
+let emailSender = require("../emailSender");
 
 const userModel = require("../userModal");
 const { JWT_SECRET } = require("../secret");
@@ -74,6 +75,8 @@ async function forgetPassword(req, res) {
 
             await userModel.updateOne({ email }, { token });
             let newUser = await userModel.findOne({ email });
+
+            await emailSender(token, user.email);
 
             res.status(200).json({
                 message: "user token send to your email",
