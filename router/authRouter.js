@@ -6,13 +6,19 @@ let jwt = require("jsonwebtoken");
 const userModel = require("../userModal");
 const { JWT_SECRET } = require("../secret");
 
+authRouter.use(bodyChecker);;
+
 authRouter
     .route("/signup")
-    .post(bodyChecker, signupUser)
+    .post(signupUser);
 
 authRouter
     .route("/login")
-    .post(bodyChecker, loginUser);
+    .post(loginUser);
+
+authRouter
+    .route("/forgetPassword")
+    .post(forgetPassword);
 
 async function signupUser(req, res) {
     try {
@@ -34,7 +40,7 @@ async function loginUser(req, res) {
         let user = await userModel.findOne({ email });
         if (user) {
             if (user.password == password) {
-                let token = jwt.sign({ id: user["_id"] }, JWT_SECRET);
+                let token = jwt.sign({ id: user["_id"] }, JWT_SECRET, { httpOnly: true });
                 res.cookie("JWT", token);
                 res.status(200).json({
                     message: "user logged in",
@@ -53,6 +59,35 @@ async function loginUser(req, res) {
         }
     } catch (err) {
         res.status(404)
+            .json({
+                message: err.message,
+            })
+    }
+}
+
+async function forgetPassword(req, res) {
+    try {
+        let { email } = req.body;
+        let user = await userModel.findOne({ email });
+        if (user) {
+            let token = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
+
+            await userModel.updateOne({ email }, { token });
+            let newUser = await userModel.findOne({ email });
+
+            res.status(200).json({
+                message: "user token send to your email",
+                user: newUser,
+                token
+            })
+        }
+        else {
+            res.status(404).json({
+                message: "user not found",
+            })
+        }
+    } catch (err) {
+        res.status(500)
             .json({
                 message: err.message,
             })

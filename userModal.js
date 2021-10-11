@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema({
         validate: function () {
             return this.confirmPassword == this.password;
         }
+    },
+
+    token: {
+        type: String
     }
 
 })
