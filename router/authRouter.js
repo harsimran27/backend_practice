@@ -1,8 +1,10 @@
 let express = require("express");
 let authRouter = express.Router();
 let { bodyChecker, protectRoute } = require("./utilFunc");
+let jwt = require("jsonwebtoken");
 
 const userModel = require("../userModal");
+const { JWT_SECRET } = require("../secret");
 
 authRouter
     .route("/signup")
@@ -26,26 +28,28 @@ async function signupUser(req, res) {
     }
 }
 
-function loginUser(req, res) {
+async function loginUser(req, res) {
     try {
         let { email, password } = req.body;
-        let obj = content.find((obj) => {
-            return obj.email == email;
-        })
-        if (!obj) {
-            return res
-                .status(404)
-                .send("user not found");
-        }
-        if (password == obj.password) {
-            let token = jwt.sign({ email: obj.email }, JWT_SECRET);
-            res.cookie("JWT", token);
+        let user = await userModel.findOne({ email });
+        if (user) {
+            if (user.password == password) {
+                let token = jwt.sign({ id: user["_id"] }, JWT_SECRET);
+                res.cookie("JWT", token);
+                res.status(200).json({
+                    message: "user logged in",
+                    user: user,
+                })
 
-            res.status(200)
-                .send("user logged in");
+            } else {
+                res.status(404).json({
+                    message: "email or password is not correct",
+                })
+            }
         } else {
-            res.status(422)
-                .send("access denied. Enter correct email and password");
+            res.status(404).json({
+                message: "user not found",
+            })
         }
     } catch (err) {
         res.status(404)
