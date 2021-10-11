@@ -1,5 +1,7 @@
 let express = require("express");
 let authRouter = express.Router();
+let { bodyChecker, protectRoute } = require("./utilFunc");
+
 const userModel = require("../userModal");
 
 authRouter
@@ -9,33 +11,6 @@ authRouter
 authRouter
     .route("/login")
     .post(bodyChecker, loginUser);
-
-function bodyChecker(req, res, next) {
-    let isPresent = Object.keys(req.body);
-    if (isPresent.length) {
-        next();
-    } else {
-        res.send("send details in body");
-    }
-}
-
-function protectRoute(req, res, next) {
-    try {
-
-        let decreptedToken = jwt.verify(req.cookies.JWT, JWT_SECRET);
-        if (decreptedToken) {
-            next();
-        } else {
-            res.send("kindly login to access this record");
-        }
-
-    } catch (err) {
-        res.status(404)
-            .json({
-                message: err.message,
-            })
-    }
-}
 
 async function signupUser(req, res) {
     try {
