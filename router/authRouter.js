@@ -21,6 +21,10 @@ authRouter
     .route("/forgetPassword")
     .post(forgetPassword);
 
+authRouter
+    .route("/resetPassword")
+    .post(resetPassword);
+
 async function signupUser(req, res) {
     try {
         let newUser = await userModel.create(req.body);
@@ -95,6 +99,40 @@ async function forgetPassword(req, res) {
                 message: err.message,
             })
     }
+}
+
+async function resetPassword(req, res) {
+    try {
+        let { password, confirmPassword, token } = req.body;
+        let user = await userModel.findOne({ token });
+
+        if (user) {
+            user.confirmPassword = confirmPassword;
+            user.password = password;
+            user.token = undefined;
+
+            await user.save();
+
+            let newUser = await userModel.findOne({email:user.email});
+            
+            res.status(200).json({
+                message:"password has been changed",
+                user: newUser,
+                token
+            })
+        }else{
+            res.status(404).json({
+                message:"token is incorrect",
+            })
+        }
+    }
+    catch (err) {
+        res.status(500)
+            .json({
+                message: err.message,
+            })
+    }
+
 }
 
 module.exports = authRouter;
