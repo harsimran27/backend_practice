@@ -1,11 +1,10 @@
 let express = require("express");
 let userRouter = express.Router();
-
+const userModel = require("../userModal");
 let { bodyChecker, protectRoute } = require("./utilFunc");
 
-let fs = require("fs");
+// userRouter.use(protectRoute);
 
-userRouter.use(protectRoute);
 userRouter
     .route("/:id")
     .get(bodyChecker, getUser)
@@ -15,7 +14,7 @@ userRouter
 
 userRouter
     .route("/")
-    .get(protectRoute, getUsers)
+    .get(getUsers)
     .post(bodyChecker, createUser);
 
 async function createUser(req, res) {
@@ -25,13 +24,13 @@ async function createUser(req, res) {
             user: user,
         })
     } catch (err) {
-        res.statu(404).json({
+        res.status(404).json({
             message: err.message,
         })
     }
 }
 
-function getUsers(req, res) {
+async function getUsers(req, res) {
     try {
         let user = await userModel.find();
         res.status(200).json({
@@ -39,7 +38,7 @@ function getUsers(req, res) {
         })
 
     } catch (err) {
-        res.statu(404).json({
+        res.status(404).json({
             message: err.message,
         })
     }
@@ -54,7 +53,7 @@ async function getUser(req, res) {
         })
 
     } catch (err) {
-        res.statu(404).json({
+        res.status(404).json({
             message: err.message,
         })
     }
@@ -63,21 +62,30 @@ async function getUser(req, res) {
 async function updateUser(req, res) {
     try {
 
-        let {id} = req.params;
+        let { id } = req.params;
+
+        if (req.body.password || req.body.confirmPassword) {
+            res.json({
+                message: "use forget password instead",
+            })
+        }
+
         let user = await userModel.findById(id);
 
-        for(let key in req.body){
+        for (let key in req.body) {
             user[key] = req.body[key];
         }
 
-        await user.save();
+        await user.save({
+            validateBeforeSave: false,
+        });
 
         res.status(200).json({
             message: user,
         })
 
     } catch (err) {
-        res.statu(404).json({
+        res.status(404).json({
             message: err.message,
         })
     }
@@ -92,7 +100,7 @@ async function deleteUser(req, res) {
         })
 
     } catch (err) {
-        res.statu(404).json({
+        res.status(404).json({
             message: err.message,
         })
     }
