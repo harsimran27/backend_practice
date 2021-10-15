@@ -15,6 +15,8 @@ module.exports.protectRoute = function protectRoute(req, res, next) {
 
         let decreptedToken = jwt.verify(req.cookies.JWT, JWT_SECRET);
         if (decreptedToken) {
+            let userId = decreptedToken.id;
+            req.userId = userId;
             next();
         } else {
             res.send("kindly login to access this record");

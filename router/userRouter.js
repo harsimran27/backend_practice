@@ -3,19 +3,19 @@ let userRouter = express.Router();
 const userModel = require("../userModal");
 let { bodyChecker, protectRoute } = require("./utilFunc");
 
-// userRouter.use(protectRoute);
+userRouter.use(protectRoute);
 
 userRouter
     .route("/:id")
     .get(bodyChecker, getUser)
-    .patch(bodyChecker, updateUser)
-    .delete(bodyChecker, deleteUser)
+    .patch(bodyChecker, isAuthorised(["admin","ce"]), updateUser)
+    .delete(bodyChecker, isAuthorised(["admin"]), deleteUser)
 
 
 userRouter
     .route("/")
-    .get(getUsers)
-    .post(bodyChecker, createUser);
+    .get(protectRoute, isAuthorised(["admin","ce"]), getUsers)
+    .post(bodyChecker, isAuthorised(["admin"]), createUser);
 
 async function createUser(req, res) {
     try {
@@ -103,6 +103,31 @@ async function deleteUser(req, res) {
         res.status(404).json({
             message: err.message,
         })
+    }
+}
+
+function isAuthorised(roles){
+    return async function(req, res, next){
+        let userId = req;
+
+        try{
+            let user = await userModel.findById(userId);
+
+            let isUserAuthorised = roles.includes(user.role);
+            if(isUserAuthorised){
+                next();
+                
+            }else{
+                res.status(200).json({
+                    message:"user not authorised",
+                })
+            }
+        }
+        catch(err){
+            res.status(500).json({
+                message:err.message,
+            })
+        }
     }
 }
 
