@@ -1,5 +1,6 @@
 let jwt = require("jsonwebtoken");
 let { JWT_SECRET } = require("../secret");
+let userModel = require("../model/userModal");
 
 module.exports.bodyChecker = function bodyChecker(req, res, next) {
     let isPresent = Object.keys(req.body);
@@ -27,5 +28,30 @@ module.exports.protectRoute = function protectRoute(req, res, next) {
             .json({
                 message: err.message,
             })
+    }
+}
+
+module.exports.isAuthorised = function isAuthorised(roles) {
+    return async function (req, res, next) {
+        let userId = req;
+
+        try {
+            let user = await userModel.findById(userId);
+
+            let isUserAuthorised = roles.includes(user.role);
+            if (isUserAuthorised) {
+                next();
+
+            } else {
+                res.status(200).json({
+                    message: "user not authorised",
+                })
+            }
+        }
+        catch (err) {
+            res.status(500).json({
+                message: err.message,
+            })
+        }
     }
 }
