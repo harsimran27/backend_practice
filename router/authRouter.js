@@ -2,9 +2,9 @@ let express = require("express");
 let authRouter = express.Router();
 let { bodyChecker, protectRoute } = require("./utilFunc");
 let jwt = require("jsonwebtoken");
-let emailSender = require("../emailSender");
+let emailSender = require("../helper/emailSender");
 
-const userModel = require("../userModal");
+const userModel = require("../model/userModal");
 const { JWT_SECRET } = require("../secret");
 
 authRouter.use(bodyChecker);;
@@ -113,16 +113,16 @@ async function resetPassword(req, res) {
 
             await user.save();
 
-            let newUser = await userModel.findOne({email:user.email});
-            
+            let newUser = await userModel.findOne({ email: user.email });
+
             res.status(200).json({
-                message:"password has been changed",
+                message: "password has been changed",
                 user: newUser,
                 token
             })
-        }else{
+        } else {
             res.status(404).json({
-                message:"token is incorrect",
+                message: "token is incorrect",
             })
         }
     }

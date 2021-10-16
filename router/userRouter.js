@@ -1,15 +1,20 @@
 let express = require("express");
-const userModel = require("../userModal");
-let { bodyChecker, protectRoute } = require("./utilFunc");
+const userModel = require("../model/userModal");
+let { bodyChecker, protectRoute, isAuthorised } = require("./utilFunc");
 let userRouter = express.Router();
+const { createElement,
+    getElement, getElements,
+    updateElement,
+    deleteElement } = require("../helper/factory");
+
+
+userRouter.use(protectRoute);
 
 let createUser = createElement(userModel);
 let getUser = getElement(userModel);
 let getUsers = getElements(userModel);
 let updateUser = updateElement(userModel);
 let deleteUser = deleteElement(userModel);
-
-userRouter.use(protectRoute);
 
 userRouter
     .route("/:id")
