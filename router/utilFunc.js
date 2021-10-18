@@ -31,27 +31,32 @@ module.exports.protectRoute = function protectRoute(req, res, next) {
     }
 }
 
-module.exports.isAuthorised = function isAuthorised(roles) {
+module.exports.isAuthorised = function (roles) {
+    console.log("I will run when the server is started")
+    // function call 
+    console.log()
     return async function (req, res, next) {
-        let userId = req;
-
+        console.log("Inner function");
+        let { userId } = req;
+        // id -> user get ,user role,
         try {
             let user = await userModel.findById(userId);
-
-            let isUserAuthorised = roles.includes(user.role);
-            if (isUserAuthorised) {
+            // console.log("role", user)
+            let userisAuthorized = roles.includes(user.role);
+            if (userisAuthorized) {
+                req.user = user;
                 next();
-
             } else {
                 res.status(200).json({
-                    message: "user not authorised",
+                    message: "user not authorized"
                 })
             }
-        }
-        catch (err) {
+        } catch (err) {
+            console.error(err);
             res.status(500).json({
-                message: err.message,
-            })
+                message: "Server error"
+            });
         }
     }
+
 }

@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const userRouter = require("./router/userRouter");
 const authRouter = require("./router/authRouter");
 const planRouter = require("./router/planRouter");
+const reviewRouter = require("./router/reviewRouter");
 
 
 app.use(express.json());
@@ -17,6 +18,7 @@ app.use(cookieParser());
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/plan", planRouter);
+app.use("/api/review", reviewRouter);
 
 app.listen("8000", function () {
     console.log('server started at port 8000');

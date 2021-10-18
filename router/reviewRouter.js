@@ -15,7 +15,7 @@ let getReview = getElement(reviewModel);
 let updateReview = updateElement(reviewModel);
 let deleteReview = deleteElement(reviewModel);
 
-planRouter.use(protectRoute);
+reviewRouter.use(protectRoute);
 
 // planRouter
 //     .route("/:id")
