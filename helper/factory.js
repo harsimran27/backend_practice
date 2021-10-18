@@ -3,12 +3,13 @@ function createElement(elementModel) {
         try {
             let element = await elementModel.create(req.body);
             res.status(200).json({
-                element: element,
-            })
+                element: element
+            });
         } catch (err) {
-            res.status(404).json({
-                message: err.message,
-            })
+            console.error(err);
+            res.status(500).json({
+                message: "Server error"
+            });
         }
     }
 }

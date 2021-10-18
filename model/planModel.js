@@ -14,9 +14,9 @@ const planSchema = new mongoose.Schema({
         type: String,
         unique: [true, "You have to enter unique Plan name"],
         required: [true, "You are required to enter the plan name"],
-        maxLength: [4, "You plan name Length must be smaller than or equal to 4"],
+        minLength: [4, "Your plan name Length must be larger than or equal to 4"],
     },
-    
+
     duration: {
         type: Number,
         required: [true, "You need to provide duration"]

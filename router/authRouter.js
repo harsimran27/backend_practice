@@ -45,7 +45,7 @@ async function loginUser(req, res) {
         let user = await userModel.findOne({ email });
         if (user) {
             if (user.password == password) {
-                let token = jwt.sign({ id: user["_id"] }, JWT_SECRET, { httpOnly: true });
+                let token = jwt.sign({ id: user["_id"] }, JWT_SECRET);
                 res.cookie("JWT", token);
                 res.status(200).json({
                     message: "user logged in",

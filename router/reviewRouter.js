@@ -1,5 +1,5 @@
 const express = require("express");
-const planModel = require("../model/planModel");
+const reviewModel = require("../model/reviewModel");
 const { bodyChecker, protectRoute, isAuthorised } = require("./utilFunc");
 
 const { createElement,
@@ -7,13 +7,13 @@ const { createElement,
     updateElement,
     deleteElement } = require("../helper/factory");
 
-const planRouter = express.Router();
+const reviewRouter = express.Router();
 
-const createPlan = createElement(planModel);
-let getPlans = getElements(planModel);
-let getPlan = getElement(planModel);
-let updatePlan = updateElement(planModel);
-let deletePlan = deleteElement(planModel);
+const createReview = createElement(reviewModel);
+let getReviews = getElements(reviewModel);
+let getReview = getElement(reviewModel);
+let updateReview = updateElement(reviewModel);
+let deleteReview = deleteElement(reviewModel);
 
 planRouter.use(protectRoute);
 
@@ -28,16 +28,16 @@ planRouter.use(protectRoute);
 //     .get(protectRoute, isAuthorised(["admin", "ce"]), getPlans)
 //     .post(bodyChecker, isAuthorised(["admin"]), createPlan);
 
-planRouter
+reviewRouter
     .route('/')
-    .post(bodyChecker, isAuthorised(["admin"]), createPlan)
+    .post(bodyChecker, isAuthorised(["admin"]), createReview)
     // localhost/plan -> get
-    .get(protectRoute, isAuthorised(["admin", "ce"]), getPlans);
+    .get(protectRoute, isAuthorised(["admin", "ce"]), getReviews);
 // console.log(2)
 // planRouter.route("/sortByRating", getbestPlans);
-planRouter.route("/:id")
-    .get(getPlan)
-    .patch(bodyChecker, isAuthorised(["admin", "ce"]), updatePlan)
-    .delete(bodyChecker, isAuthorised(["admin"]), deletePlan)
+reviewRouter.route("/:id")
+    .get(getReview)
+    .patch(bodyChecker, isAuthorised(["admin", "ce"]), updateReview)
+    .delete(bodyChecker, isAuthorised(["admin"]), deleteReview)
 
-module.exports = planRouter;
+module.exports = reviewRouter;
