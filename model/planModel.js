@@ -41,7 +41,7 @@ const planSchema = new mongoose.Schema({
 
     averageRating: Number,
 
-    reviewId: {
+    reviews: {
         type: [mongoose.Schema.ObjectId],
     }
 

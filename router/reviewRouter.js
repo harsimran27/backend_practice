@@ -17,19 +17,62 @@ let deleteReview = deleteElement(reviewModel);
 
 reviewRouter.use(protectRoute);
 
-reviewRouter
-    .route("/getUserAlso")
-    .get(getUserAlso)
+async function createReview(req, res) {
+    try {
 
-reviewRouter
-    .route('/')
-    .post(bodyChecker, isAuthorised(["admin"]), createReview)
-    .get(protectRoute, isAuthorised(["admin", "ce"]), getReviews);
+        let review = await reviewModel.create(req.body);
 
-reviewRouter.route("/:id")
-    .get(getReview)
-    .patch(bodyChecker, isAuthorised(["admin", "ce"]), updateReview)
-    .delete(bodyChecker, isAuthorised(["admin"]), deleteReview)
+        let planId = review.plan;
+        let plan = await planModel.findById(planId);
+        plan.reviews.push(review["_id"]);
+
+        if (plan.averageRating) {
+            let sum = plan.averageRating * plan.reviews.length;
+            let finalAvgRating = (sum + review.rating) / (plan.reviews.length + 1);
+            plan.averageRating = finalAvgRating;
+        } else {
+            averageRating = review.rating;
+        }
+
+        await plan.save();
+
+        res.status(200).json({
+            message: "review created",
+            review: review,
+        })
+
+    } catch (err) {
+        res.status(500)
+            .json({
+                err: err.message,
+            })
+    }
+}
+
+async function deleteReview(req, res) {
+    try {
+
+        let review = await reviewModel.findByIdAndDelete(req.body.id);
+        let planId = review.plan;
+        let plan = await planModel.findById(planId);
+
+        let indexOfReview = plan.reviews.indexOf(reviews["_id"]);
+        plan.reviews.splice(indexOfReview, 1);
+
+        await plan.save();
+
+        res.status(200).json({
+            message: "review successfully deleted",
+            review: review,
+        })
+
+    } catch (err) {
+        res.status(200)
+            .json({
+                err: err.message,
+            })
+    }
+}
 
 async function getUserAlso(req, res) {
 
@@ -52,5 +95,19 @@ async function getUserAlso(req, res) {
     }
 
 }
+
+reviewRouter
+    .route("/getUserAlso")
+    .get(getUserAlso)
+
+reviewRouter
+    .route('/')
+    .post(bodyChecker, isAuthorised(["admin"]), createReview)
+    .get(protectRoute, isAuthorised(["admin", "ce"]), getReviews);
+
+reviewRouter.route("/:id")
+    .get(getReview)
+    .patch(bodyChecker, isAuthorised(["admin", "ce"]), updateReview)
+    .delete(bodyChecker, isAuthorised(["admin"]), deleteReview)
 
 module.exports = reviewRouter;
