@@ -41,7 +41,6 @@ module.exports.isAuthorised = function (roles) {
         // id -> user get ,user role,
         try {
             let user = await userModel.findById(userId);
-            // console.log("role", user)
             let userisAuthorized = roles.includes(user.role);
             if (userisAuthorized) {
                 req.user = user;

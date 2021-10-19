@@ -13,8 +13,6 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// let content = JSON.parse(fs.readFileSync("./data.json"));
-
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/plan", planRouter);

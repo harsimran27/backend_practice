@@ -17,24 +17,11 @@ let deletePlan = deleteElement(planModel);
 
 planRouter.use(protectRoute);
 
-// planRouter
-//     .route("/:id")
-//     .get(bodyChecker, getPlan)
-//     .patch(bodyChecker, isAuthorised(["admin", "ce"]), updatePlan)
-//     .delete(bodyChecker, isAuthorised(["admin"]), deletePlan)
-
-// planRouter
-//     .route("/")
-//     .get(protectRoute, isAuthorised(["admin", "ce"]), getPlans)
-//     .post(bodyChecker, isAuthorised(["admin"]), createPlan);
-
 planRouter
     .route('/')
     .post(bodyChecker, isAuthorised(["admin"]), createPlan)
-    // localhost/plan -> get
     .get(protectRoute, isAuthorised(["admin", "ce"]), getPlans);
-// console.log(2)
-// planRouter.route("/sortByRating", getbestPlans);
+
 planRouter.route("/:id")
     .get(getPlan)
     .patch(bodyChecker, isAuthorised(["admin", "ce"]), updatePlan)

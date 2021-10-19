@@ -17,27 +17,40 @@ let deleteReview = deleteElement(reviewModel);
 
 reviewRouter.use(protectRoute);
 
-// planRouter
-//     .route("/:id")
-//     .get(bodyChecker, getPlan)
-//     .patch(bodyChecker, isAuthorised(["admin", "ce"]), updatePlan)
-//     .delete(bodyChecker, isAuthorised(["admin"]), deletePlan)
-
-// planRouter
-//     .route("/")
-//     .get(protectRoute, isAuthorised(["admin", "ce"]), getPlans)
-//     .post(bodyChecker, isAuthorised(["admin"]), createPlan);
+reviewRouter
+    .route("/getUserAlso")
+    .get(getUserAlso)
 
 reviewRouter
     .route('/')
     .post(bodyChecker, isAuthorised(["admin"]), createReview)
-    // localhost/plan -> get
     .get(protectRoute, isAuthorised(["admin", "ce"]), getReviews);
-// console.log(2)
-// planRouter.route("/sortByRating", getbestPlans);
+
 reviewRouter.route("/:id")
     .get(getReview)
     .patch(bodyChecker, isAuthorised(["admin", "ce"]), updateReview)
     .delete(bodyChecker, isAuthorised(["admin"]), deleteReview)
+
+async function getUserAlso(req, res) {
+
+    try {
+        let reviews = await reviewModel.find().populate({
+            path: "user plan",
+            select: "name email duration price name"
+        })
+
+        res.status(200).json({
+            review: reviews,
+        })
+
+    }
+    catch (err) {
+        res.status(500)
+            .json({
+                err: err.message,
+            })
+    }
+
+}
 
 module.exports = reviewRouter;
