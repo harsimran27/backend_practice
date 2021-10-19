@@ -43,6 +43,7 @@ const planSchema = new mongoose.Schema({
 
     reviews: {
         type: [mongoose.Schema.ObjectId],
+        ref: "reviewModel"
     }
 
 })

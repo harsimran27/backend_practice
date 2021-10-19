@@ -2,18 +2,15 @@ const express = require("express");
 const reviewModel = require("../model/reviewModel");
 const { bodyChecker, protectRoute, isAuthorised } = require("./utilFunc");
 
-const { createElement,
+const {
     getElement, getElements,
-    updateElement,
-    deleteElement } = require("../helper/factory");
+    updateElement} = require("../helper/factory");
 
 const reviewRouter = express.Router();
 
-const createReview = createElement(reviewModel);
 let getReviews = getElements(reviewModel);
 let getReview = getElement(reviewModel);
 let updateReview = updateElement(reviewModel);
-let deleteReview = deleteElement(reviewModel);
 
 reviewRouter.use(protectRoute);
 
@@ -93,7 +90,6 @@ async function getUserAlso(req, res) {
                 err: err.message,
             })
     }
-
 }
 
 reviewRouter
