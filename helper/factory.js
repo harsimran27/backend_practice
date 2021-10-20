@@ -17,10 +17,35 @@ function createElement(elementModel) {
 function getElements(elementModel) {
     return async function (req, res) {
         try {
-            let element = await elementModel.find();
-            res.status(200).json({
-                element: element,
-            })
+            let requestPromise;
+
+            if (req.query.myQuery) {
+                requestPromise = elementModel.find(req.query.myQuery);
+            } else {
+                requestPromise = elementModel.find();
+            }
+
+            if (req.query.sort) {
+                requestPromise = requestPromise.sort(req.query.sort);
+            }
+
+            if (req.query.select) {
+                let params = req.query.select.split("%").join(" ");
+                requestPromise = requestPromise.select(params);
+            }
+
+            let page = Number(req.query.page) || 1;
+            let limit = Number(req.query.limit) || 4;
+            let toSkip = (page - 1) * limit;
+            requestPromise = requestPromise
+                .skip(toSkip)
+                .limit(limit);
+
+            let elements = await requestPromise;
+            res.status(200)
+                .json({
+                    element: elements,
+                })
 
         } catch (err) {
             res.status(404).json({
