@@ -1,31 +1,31 @@
 const express = require("express");
-const reviewModel = require("../model/reviewModel");
+const bookingModel = require("../model/bookingModel");
 const { bodyChecker, protectRoute, isAuthorised } = require("./utilFunc");
 
 const {
     getElement, getElements,
     updateElement } = require("../helper/factory");
 
-const reviewRouter = express.Router();
+const bookingRouter = express.Router();
 
-let getReviews = getElements(reviewModel);
-let getReview = getElement(reviewModel);
-let updateReview = updateElement(reviewModel);
+let getBookings = getElements(bookingModel);
+let getBooking = getElement(bookingModel);
+let updateBooking = updateElement(bookingModel);
 
-reviewRouter.use(protectRoute);
+bookingRouter.use(protectRoute);
 
-reviewRouter
+bookingRouter
     .route("/getUserAlso")
     .get(getUserAlso)
 
-reviewRouter
+bookingRouter
     .route('/')
-    .post(bodyChecker, isAuthorised(["admin"]), createReview)
-    .get(protectRoute, isAuthorised(["admin", "ce"]), getReviews);
+    .post(bodyChecker, isAuthorised(["admin"]), createBooking)
+    .get(protectRoute, isAuthorised(["admin", "ce"]), getBookings);
 
-reviewRouter.route("/:id")
-    .get(getReview)
-    .patch(bodyChecker, isAuthorised(["admin", "ce"]), updateReview)
-    .delete(bodyChecker, isAuthorised(["admin"]), deleteReview)
+bookingRouter.route("/:id")
+    .get(getBooking)
+    .patch(bodyChecker, isAuthorised(["admin", "ce"]), updateBooking)
+    .delete(bodyChecker, isAuthorised(["admin"]), deleteBooking)
 
 module.exports = bookingRouter;
