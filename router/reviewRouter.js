@@ -4,7 +4,7 @@ const { bodyChecker, protectRoute, isAuthorised } = require("./utilFunc");
 
 const {
     getElement, getElements,
-    updateElement} = require("../helper/factory");
+    updateElement } = require("../helper/factory");
 
 const reviewRouter = express.Router();
 
