@@ -47,6 +47,11 @@ const userSchema = new mongoose.Schema({
         type:String,
         enum:["admin","ce","user"],
         default:"user"
+    },
+
+    bookings:{
+        type:[mongoose.Schema.ObjectId],
+        ref:"bookingModel"
     }
 
 })
