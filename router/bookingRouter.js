@@ -2,6 +2,12 @@ const express = require("express");
 const bookingModel = require("../model/bookingModel");
 const userModel = require("../model/userModal");
 const { bodyChecker, protectRoute, isAuthorised } = require("./utilFunc");
+const Razorpay = require("razorpay");
+let { KEY_ID, KEY_SECRET } = require("../secret");
+let razorpay = new Razorpay({
+    key_id: KEY_ID,
+    key_secret: KEY_SECRET,
+});
 
 const {
     getElement, getElements,
@@ -26,12 +32,29 @@ async function initiateBooking(req, res) {
 
         await user.save();
 
+        const payment_capture = 1;
+        const amount = 500;
+        const currency = "INR";
+        const options = {
+            amount,
+            currency,
+            receipt: `rs_${bookingId}`,
+            payment_capture,
+        };
+
+        const response = await razorpay.orders.create(options);
+        console.log(response);
+
         res.status(200).json({
-            message: "booking created",
+            id: response.id,
+            currency: response.currency,
+            amount: response.amount,
             booking: booking,
-        })
+            message: "booking created",
+        });
 
     } catch (err) {
+        console.log(err);
         res.status(500)
             .json({
                 err: err.message,
