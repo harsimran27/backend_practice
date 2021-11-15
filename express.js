@@ -3,6 +3,8 @@ const path = require('path');
 const app = express();
 const cookieParser = require("cookie-parser");
 
+const Port = process.env.PORT || 3002;
+
 const userRouter = require("./router/userRouter");
 const authRouter = require("./router/authRouter");
 const planRouter = require("./router/planRouter");
@@ -18,10 +20,10 @@ app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/plan", planRouter);
 app.use("/api/review", reviewRouter);
-app.use("/api/booking",bookingRouter);
+app.use("/api/booking", bookingRouter);
 
-app.listen("8000", function () {
-    console.log('server started at port 8000');
+app.listen(Port, function () {
+    console.log(`server started at port ${Port}`);
 })
 
 app.use(function (req, res) {

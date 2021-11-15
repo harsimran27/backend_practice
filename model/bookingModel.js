@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { db_link } = require("../secret");
+const { db_link } = process.env 
 
 mongoose.connect(db_link).then(function () {
     console.log("database is connected");

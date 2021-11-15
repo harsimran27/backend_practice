@@ -5,7 +5,7 @@ let jwt = require("jsonwebtoken");
 let emailSender = require("../helper/emailSender");
 
 const userModel = require("../model/userModal");
-const { JWT_SECRET } = require("../secret");
+const { JWT_SECRET } = process.env
 
 authRouter.use(bodyChecker);;
 

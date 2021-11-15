@@ -3,10 +3,10 @@ const bookingModel = require("../model/bookingModel");
 const userModel = require("../model/userModal");
 const { bodyChecker, protectRoute, isAuthorised } = require("./utilFunc");
 const Razorpay = require("razorpay");
-let { KEY_ID, KEY_SECRET } = require("../secret");
+let { KEY_ID, KEY_SECRET } = process.env
 let razorpay = new Razorpay({
-    key_id: KEY_ID,
-    key_secret: KEY_SECRET,
+    KEY_ID,
+    KEY_SECRET,
 });
 
 const {
@@ -21,17 +21,14 @@ let updateBooking = updateElement(bookingModel);
 
 bookingRouter.use(protectRoute);
 
-async function initiateBooking(req, res) {
+const initiateBooking = async function (req, res) {
     try {
-
         let booking = await bookingModel.create(req.body);
         let bookingId = booking["_id"];
-        let userId = booking.user;
+        let userId = req.body.user;
         let user = await userModel.findById(userId);
         user.bookings.push(bookingId);
-
         await user.save();
-
         const payment_capture = 1;
         const amount = 500;
         const currency = "INR";
@@ -41,10 +38,8 @@ async function initiateBooking(req, res) {
             receipt: `rs_${bookingId}`,
             payment_capture,
         };
-
         const response = await razorpay.orders.create(options);
         console.log(response);
-
         res.status(200).json({
             id: response.id,
             currency: response.currency,
@@ -52,13 +47,11 @@ async function initiateBooking(req, res) {
             booking: booking,
             message: "booking created",
         });
-
-    } catch (err) {
-        console.log(err);
-        res.status(500)
-            .json({
-                err: err.message,
-            })
+    }
+    catch (err) {
+        res.status(500).json({
+            message: err.message
+        })
     }
 }
 

@@ -1,5 +1,5 @@
 let jwt = require("jsonwebtoken");
-let { JWT_SECRET } = require("../secret");
+let { JWT_SECRET } = process.env 
 let userModel = require("../model/userModal");
 
 module.exports.bodyChecker = function bodyChecker(req, res, next) {
